@@ -11,6 +11,7 @@
   videojs.registerPlugin('suggestedVideoEndcap', function(opts) {
     opts = opts || {
         header: 'You may also like…',
+        file: '',
         suggestions: [
           {
             title: '',
@@ -75,12 +76,45 @@
     // attach VideoJS event handlers
     player.on('ended', function() {
       _sve.classList.add('is-active');
-    }).on('play', function() {
+    });
+    player.on('play', function() {
       _sve.classList.remove('is-active');
     });
 
     player.ready(function() {
-      constructSuggestedVideoEndcapContent();
+      if (opts.file) {
+        videojs.xhr({
+          responseType: 'document',
+          uri: opts.file,
+          headers: {
+            'Content-Type': 'application/xml'
+          }
+        }, function (err, resp, body) {
+          var items = body.getElementsByTagName('item');
+
+          opts.suggestions = [];
+          for (var i = 0; i < items.length && i < 6; i++) {
+            let item = items.item(i);
+            let title = item.getElementsByTagName('title').item(0).innerHTML,
+              url = item.getElementsByTagName('link').item(0).innerHTML,
+              image = item.getElementsByTagName('media:thumbnail').item(0).getAttribute('url');
+
+            opts.suggestions.push({
+              title: title,
+              url: url,
+              image: image,
+              alt: '',
+              target: '_self'
+            });
+          }
+
+          opts.suggestions.reverse();
+          constructSuggestedVideoEndcapContent();
+        });
+      }
+      else {
+        constructSuggestedVideoEndcapContent();
+      }
     });
 
 
