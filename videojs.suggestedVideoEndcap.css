@@ -10,6 +10,13 @@
   top: 0;
   width: 100%;
 }
+.vjs-suggested-video-endcap .vjs-icon-cancel {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  font-size: 15px;
+  cursor: pointer;
+}
 .vjs-suggested-video-endcap.is-active {
   display: block;
 }

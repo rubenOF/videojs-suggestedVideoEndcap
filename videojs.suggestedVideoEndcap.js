@@ -35,6 +35,8 @@
       var _aside = document.createElement('aside');
       var _div = document.createElement('div');
       var _header = document.createElement('h5');
+      var _close = document.createElement('div');
+
       // can only hold eight suggestions at a time
       var i = sugs.length - 1 > 7 ? 7 : sugs.length - 1;
       var _a;
@@ -46,7 +48,14 @@
       _header.innerHTML = opts.header;
       _header.className = 'vjs-suggested-video-endcap-header';
 
+      _close.innerHTML = '&nbsp';
+      _close.className = 'vjs-icon-cancel';
+      _close.onclick = function () {
+        _aside.classList.remove('is-active');
+      }
+
       _aside.appendChild(_header);
+      _aside.appendChild(_close);
 
       // construct the individual suggested content pieces
       for (; i >= 0; --i) {
@@ -71,17 +80,18 @@
       _sve = _aside;
       _frag.appendChild(_aside);
       player.el().appendChild(_frag);
+
+      // attach VideoJS event handlers
+      player.on('ended', function() {
+        _sve.classList.add('is-active');
+      });
+      player.on('play', function() {
+        _sve.classList.remove('is-active');
+      });
     }
 
-    // attach VideoJS event handlers
-    player.on('ended', function() {
-      _sve.classList.add('is-active');
-    });
-    player.on('play', function() {
-      _sve.classList.remove('is-active');
-    });
-
     player.ready(function() {
+
       if (opts.file) {
         videojs.xhr({
           responseType: 'document',
